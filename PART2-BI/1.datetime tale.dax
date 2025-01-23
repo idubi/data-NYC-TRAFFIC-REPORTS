@@ -1,0 +1,21 @@
+DateTable = 
+ADDCOLUMNS(
+    CALENDAR(
+        DATE(YEAR(MINX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime])), 
+             MONTH(MINX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime])), 
+             DAY(MINX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime]))),
+        DATE(YEAR(MAXX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime])), 
+             MONTH(MAXX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime])), 
+             DAY(MAXX(VU_FactTableFor2015To2017, VU_FactTableFor2015To2017[ViolationDateTime])))
+    ),
+    "Year", YEAR([Date]),
+    "Month", MONTH([Date]),
+    "MonthName", FORMAT([Date], "MMMM"),
+    "Quarter", "Q" & QUARTER([Date]),
+    "Weekday", FORMAT([Date], "dddd"),
+    "WeekdayNumber", WEEKDAY([Date]),
+    "Day", DAY([Date]),
+    "IsWeekend", IF(WEEKDAY([Date]) IN {1, 7}, "Yes", "No"),
+    "YearMonth", FORMAT([Date], "YYYY-MM"),
+    "WeekOfYear", WEEKNUM([Date])
+)
