@@ -1,20 +1,17 @@
 -- SQL
-SELECT BoroughName,
-			DATENAME(WEEKDAY, vftft.ViolationDateTime) AS DayName,
-			count(vftft.ParkingViolationKey) AS #tickets	,					  
-			DATEPART(WEEKDAY, vftft.ViolationDateTime) AS DayNumber	 	 
-			
+SELECT   vft.BoroughCode   , BoroughName,
+			DATENAME(WEEKDAY, vft.ViolationDate) AS DayName,
+			count(vft.ParkingViolationKey) AS  NumberOfTickets	,					  
+			DATEPART(WEEKDAY, vft.ViolationDate) AS DayNumber	 	 
 FROM DimBorough db
-			JOIN VU_DimLocationCelan vdlc 
-				ON vdlc.BoroughCode = db.BoroughCode
-			JOIN VU_FactTableFor2015To2017 vftft 
-				ON vftft.LocationKey = vdlc.LocationKey
-GROUP BY BoroughName,
-	DATENAME(WEEKDAY, vftft.ViolationDateTime) ,
-    DATEPART(WEEKDAY, vftft.ViolationDateTime)
+			JOIN VU_FactTableFor2015To2017 vft 
+				ON db.BoroughCode = vft.BoroughCode        
+GROUP BY vft.BoroughCode , BoroughName,
+	DATENAME(WEEKDAY, vft.ViolationDate) ,
+    DATEPART(WEEKDAY, vft.ViolationDate)
     
 ORDER BY BoroughName,
-	DATEPART(WEEKDAY, vftft.ViolationDateTime) -- number of day
+	DATEPART(WEEKDAY, vft.ViolationDate) -- number of day
 
 
 GO
@@ -23,25 +20,26 @@ ALTER PROCEDURE GetParkingViolationCountsForBoroughAndDayOfWeek
     @Day NVARCHAR(50) = NULL,       -- Day name parameter (e.g., 'Monday')
     @Borough NVARCHAR(255) = NULL  -- Borough name parameter (e.g., 'Manhattan')
 AS
-
-select BoroughName, DayName , #tickets , DayNumber 
+select BoroughCode, BoroughName, DayName ,  NumberOfTickets , DayNumber 
 	from (
-			SELECT BoroughName,
-						DATENAME(WEEKDAY, vftft.ViolationDateTime) AS DayName,
-						DATEPART(WEEKDAY, vftft.ViolationDateTime) AS DayNumber,
-						count(vftft.ParkingViolationKey) AS #tickets						  
+			SELECT vft.BoroughCode, BoroughName,
+						DATENAME(WEEKDAY, vft.ViolationDate) AS DayName,
+						DATEPART(WEEKDAY, vft.ViolationDate) AS DayNumber,
+						count(vft.ParkingViolationKey) AS  NumberOfTickets						  
 
 			FROM DimBorough db
-						JOIN VU_DimLocationCelan vdlc 
-							ON vdlc.BoroughCode = db.BoroughCode
-						JOIN VU_FactTableFor2015To2017 vftft 
-							ON vftft.LocationKey = vdlc.LocationKey
-			GROUP BY BoroughName,
-				DATENAME(WEEKDAY, vftft.ViolationDateTime) ,
-			    DATEPART(WEEKDAY, vftft.ViolationDateTime)
+						JOIN VU_FactTableFor2015To2017 vft 
+                           ON db.BoroughCode = vft.BoroughCode  
+			GROUP BY vft.BoroughCode,BoroughName,
+				DATENAME(WEEKDAY, vft.ViolationDate) ,
+			    DATEPART(WEEKDAY, vft.ViolationDate)
 				)  sql4DayAndBoroughName
-	where (@Borough is null or sql4DayAndBoroughName.BoroughName like lower(@Borough)+'%')
-      and (@Day is null or sql4DayAndBoroughName.DayName like lower(@Day)+'%')   
+	where (@Borough is null or sql4DayAndBoroughName.BoroughName = lower(@Borough))
+      and (@Day is null or sql4DayAndBoroughName.DayName = lower(@Day))   
 
 ORDER BY BoroughName,
   DayNumber-- number of day
+
+go 
+
+exec GetParkingViolationCountsForBoroughAndDayOfWeek @borough=bronx

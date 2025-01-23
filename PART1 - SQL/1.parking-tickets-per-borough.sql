@@ -1,14 +1,13 @@
 -- SQL
 
-SELECT  BoroughName
-       ,count (vfpv.ParkingViolationKey ) AS #tickets
+SELECT vft.BoroughCode
+       ,BoroughName
+       ,count (vft.ParkingViolationKey )  AS  NumberOfTickets
 FROM DimBorough db
-    JOIN VU_DimLocationCelan vdlc
-        ON vdlc.BoroughCode = db.BoroughCode
-    JOIN VU_FactTableFor2015To2017 vfpv
-        ON vdlc.LocationKey = vfpv.LocationKey
-GROUP BY  BoroughName
-ORDER BY  2 desc;
+    JOIN VU_FactTableFor2015To2017 vft
+        ON vft.BoroughCode = db.BoroughCode
+GROUP BY  vft.BoroughCode,BoroughName
+ORDER BY   NumberOfTickets desc;
 
 
 GO
@@ -16,17 +15,21 @@ GO
 
 ALTER PROCEDURE GetBoroughTicketCounts @Borough NVARCHAR(255) = NULL AS BEGIN
     SET NOCOUNT ON;
-
-    SELECT  BoroughName
-        ,count (vfpv.ParkingViolationKey ) AS #tickets
+    SELECT  vft.BoroughCode
+        ,BoroughName
+        ,count (vft.ParkingViolationKey ) AS  NumberOfTickets
     FROM DimBorough db
-        JOIN VU_DimLocationCelan vdlc
-            ON vdlc.BoroughCode = db.BoroughCode
-        JOIN VU_FactTableFor2015To2017 vfpv
-            ON vdlc.LocationKey = vfpv.LocationKey
-    WHERE (@Borough IS NULL OR LOWER(db.BoroughName) LIKE LOWER(@Borough)+'%')
-    GROUP BY  BoroughName
-    ORDER BY  #tickets DESC; 
+        JOIN VU_FactTableFor2015To2017 vft
+           on db.BoroughCode = vft.BoroughCode            
+    WHERE (@Borough IS NULL OR LOWER(db.BoroughName) = LOWER(@Borough))
+    GROUP BY  vft.BoroughCode,BoroughName
+    ORDER BY   NumberOfTickets DESC; 
 END;
+
+GO
+
+  exec GetBoroughTicketCounts 
+
+
 
  

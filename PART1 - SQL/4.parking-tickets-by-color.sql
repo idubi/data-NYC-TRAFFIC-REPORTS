@@ -1,22 +1,18 @@
 -- SQL
 
 SELECT  top(5) 
-COUNT(vftft.ParkingViolationKey) AS count#
-       ,dc.ColorName
-FROM VU_FactTableFor2015To2017 vftft 
-	JOIN DimVehicle dv
-		ON vftft.VehicleKey = dv.VehicleKey
+COUNT(vft.ParkingViolationKey) AS  NumberOfTickets
+       ,dc.ColorName ,dc.ColorCode 
+FROM VU_FactTableFor2015To2017 vft 
 	JOIN DimColor dc
-		ON dc.ColorCode = dv.VehicleColorCode
-WHERE dv.VehicleColorCode <> 'UNK'
-GROUP BY  dv.VehicleColorCode
-         ,dc.ColorName
-ORDER BY  count# DESC
+         ON dc.ColorCode = vft.VehicleColorCode
+GROUP BY  dc.ColorCode,dc.ColorName 
+ORDER BY   NumberOfTickets DESC
 
 
 GO
 -- STORED PROCEDURE
-CREATE PROCEDURE GetTopParkingViolationsByColor
+alter PROCEDURE GetTopParkingViolationsByColor
      @TopNumber INT = 0 -- Default is 0, meaning no limit , 
                        -- IF WE EXECUTE IT WITHOUT PARAMETER THE SAME AS 0 
 AS
@@ -33,18 +29,20 @@ BEGIN
             ELSE 
                ''
           END +
-              'COUNT(vftft.ParkingViolationKey) AS count#
+              'COUNT(vft.ParkingViolationKey) AS  NumberOfTickets
+                     ,dc.ColorName,dc.ColorCode 
+              FROM VU_FactTableFor2015To2017 vft 
+                     JOIN DimColor dc 
+                            ON dc.ColorCode = vft.VehicleColorCode
+
+              GROUP BY  dc.ColorCode 
                      ,dc.ColorName
-              FROM VU_FactTableFor2015To2017 vftft 
-                     JOIN DimVehicle dv
-                            ON vftft.VehicleKey = dv.VehicleKey
-                     JOIN DimColor dc
-                            ON dc.ColorCode = dv.VehicleColorCode
-              WHERE dv.VehicleColorCode <> ''UNK''
-              GROUP BY  dv.VehicleColorCode
-                     ,dc.ColorName
-              ORDER BY  count# DESC';
+              ORDER BY   NumberOfTickets DESC';
 
     -- Execute the DYNAMIC SQL
     EXEC sp_executesql @SQL;
 END; 
+
+go 
+
+exec GetTopParkingViolationsByColor;
