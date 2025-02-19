@@ -306,11 +306,11 @@ FROM (
 GROUP BY ViolationCode , violation, value2015, value2016, value2017;
 
 
--- dbo.VU_DimLocationCelan source
+-- dbo.VU_dimLocationClean source
 
 -- dbo.NewView source
 
-CREATE VIEW dbo.VU_DimLocationCelan AS
+CREATE VIEW dbo.VU_dimLocationClean AS
   SELECT LocationKey, BoroughCode, StreetCode, StreetName, HouseNumber, City, StateCode
     FROM DWH_DATA_ANALYST.dbo.DimLocation 
     WHERE BoroughCode<>99 --99=unknown borough
@@ -366,7 +366,7 @@ SELECT ParkingViolationKey
        , dv.plateTypeCode       
        , di.issuingAgencyCode
     FROM FactParkingViolation fpv  
-	join VU_DimLocationCelan vdlc on vdlc.LocationKey = fpv.LocationKey	
+	join VU_dimLocationClean vdlc on vdlc.LocationKey = fpv.LocationKey	
        join DimVehicle dv on dv.VehicleKey = fpv.VehicleKey
           left join DimIssuer di  on  di.IssuerKey = fpv.IssuerKey
 WHERE YEAR(CAST(fpv.IssueDate AS DATE)) BETWEEN 2015 AND 2017

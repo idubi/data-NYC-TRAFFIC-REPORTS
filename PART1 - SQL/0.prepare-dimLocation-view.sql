@@ -1,4 +1,4 @@
-CREATE VIEW dbo.VU_DimLocationCelan AS
+CREATE VIEW dbo.VU_dimLocationClean AS
 SELECT  LocationKey
        ,BoroughCode
        ,StreetCode

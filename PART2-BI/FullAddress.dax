@@ -1,0 +1,5 @@
+FullAddress = 
+CONCATENATE( 
+    CONCATENATE(VU_dimLocationClean[HouseNumber] & " ", VU_dimLocationClean[StreetName]), 
+    ", " & VU_dimLocationClean[BoroughNameLookup] & ", New York, NY"
+)

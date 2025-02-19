@@ -34,7 +34,7 @@ SELECT ParkingViolationKey
        , dv.RegistrationStateCode
        , dv.BodyTypeCode
     FROM FactParkingViolation fpv  
-	join VU_DimLocationCelan vdlc on vdlc.LocationKey = fpv.LocationKey	
+	join VU_dimLocationClean vdlc on vdlc.LocationKey = fpv.LocationKey	
        join DimVehicle dv on dv.VehicleKey = fpv.VehicleKey
 WHERE YEAR(CAST(fpv.IssueDate AS DATE)) BETWEEN 2015 AND 2017
               and dv.VehicleColorCode <> 'UNK';

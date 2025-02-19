@@ -10,7 +10,7 @@ WITH
         FROM
             VU_FactTableFor2015To2017 vftft
             JOIN
-                VU_DimLocationCelan vdlc on vdlc.LocationKey = vftft.LocationKey
+                VU_dimLocationClean vdlc on vdlc.LocationKey = vftft.LocationKey
             Join 
                 DimBorough db ON db.BoroughCode = vdlc.BoroughCode
         GROUP BY 
@@ -54,7 +54,7 @@ WITH
         FROM
             VU_FactTableFor2015To2017 vftft
             JOIN
-                VU_DimLocationCelan vdlc on vdlc.LocationKey = vftft.LocationKey
+                VU_dimLocationClean vdlc on vdlc.LocationKey = vftft.LocationKey
             Join 
                 DimBorough db ON db.BoroughCode = vdlc.BoroughCode
         GROUP BY 
@@ -98,7 +98,7 @@ WITH
         FROM
             VU_FactTableFor2015To2017 vftft
             JOIN
-                VU_DimLocationCelan vdlc on vdlc.LocationKey = vftft.LocationKey
+                VU_dimLocationClean vdlc on vdlc.LocationKey = vftft.LocationKey
             Join 
                 DimBorough db ON db.BoroughCode = vdlc.BoroughCode
         GROUP BY 
