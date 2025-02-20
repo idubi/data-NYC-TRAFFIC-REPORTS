@@ -1,0 +1,16 @@
+PaymentAmountREcurrence = 
+VAR IsManhattan = IF(VALUE(VU_FactViolationRecurrence[BoroughCode]) = 1, TRUE, FALSE)
+VAR FineAmount = LOOKUPVALUE(
+    DimViolationsFine[FineAmountUSD], 
+    DimViolationsFine[ViolationKey], VU_FactViolationRecurrence[violationCode]
+)
+VAR FineAmountManhattan = LOOKUPVALUE(
+    DimViolationsFine[FineAmountUSDManhattan96], 
+    DimViolationsFine[ViolationKey], VU_FactViolationRecurrence[violationCode]
+)
+RETURN
+IF(
+    ISBLANK(FineAmount) && ISBLANK(FineAmountManhattan), 
+    0, -- Return 0 if no matching violationCode is found
+    IF(IsManhattan, FineAmountManhattan, FineAmount)
+)
